@@ -6,7 +6,7 @@ def call(String command) {
     call(command: command)
 }
 
-def call(Map config = [:]) {
+def call(Map config) {
     String command = config.command?.toString()?.trim()
     List commands = (config.commands ?: []) as List
     boolean failIfMissing = config.failIfMissing as boolean
