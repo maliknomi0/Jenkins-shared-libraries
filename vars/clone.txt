@@ -1,0 +1,17 @@
+Clone a Git repository.
+
+Usage:
+  clone(url: 'https://github.com/org/repo.git', branch: 'main')
+  clone(url: 'https://github.com/org/repo.git', branch: 'main', credentialsId: 'git-creds')
+
+Parameters:
+  url (required)
+    Repository URL.
+  branch (optional, default: main)
+    Branch to checkout.
+  credentialsId (optional)
+    Jenkins credentials ID for authenticated access.
+  changelog (optional boolean)
+    Pass-through to Jenkins `git` step.
+  poll (optional boolean)
+    Pass-through to Jenkins `git` step.

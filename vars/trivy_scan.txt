@@ -1,0 +1,27 @@
+Run a Trivy security scan.
+
+Usage:
+  trivy_scan()
+  trivy_scan(mode: 'fs', target: '.', severity: 'HIGH,CRITICAL', exitCode: 1)
+  trivy_scan(mode: 'image', target: 'myorg/app:123')
+
+Parameters:
+  mode (optional, default: fs)
+    Supported values: `fs`, `image`, `repo`, `config`.
+  target (optional, default: .)
+    Scan target path/image/repo.
+  severity (optional)
+    Severity filter, for example `HIGH,CRITICAL`.
+  format (optional)
+    Trivy output format.
+  output (optional)
+    Output file path.
+  ignoreUnfixed (optional boolean)
+    Add `--ignore-unfixed`.
+  exitCode (optional integer)
+    Set Trivy exit code on findings.
+  extraArgs (optional list)
+    Extra CLI arguments passed to Trivy.
+
+Requirements:
+  Trivy CLI must be available on the Jenkins agent.

@@ -1,0 +1,11 @@
+Clean the Jenkins workspace using the Workspace Cleanup plugin.
+
+Usage:
+  clean_ws()
+  clean_ws(deleteDirs: true, disableDeferredWipeout: true)
+
+Parameters:
+  Pass-through options supported by the Jenkins `cleanWs(...)` step.
+
+Notes:
+  Requires the Workspace Cleanup plugin.

@@ -1,0 +1,42 @@
+Build a Docker image.
+
+Usage:
+  docker_build(imageName: 'myorg/app', imageTag: env.BUILD_NUMBER)
+  docker_build(
+    imageName: 'myorg/app',
+    imageTag: '123',
+    dockerfile: 'Dockerfile',
+    context: '.',
+    buildArgs: [VERSION: '123'],
+    additionalTags: ['qa'],
+    tagLatest: true
+  )
+
+Parameters:
+  imageName (required)
+    Docker image name/repository.
+  imageTag (optional, default: latest)
+    Primary image tag.
+  dockerfile (optional, default: Dockerfile)
+    Dockerfile path.
+  context (optional, default: .)
+    Docker build context.
+  tagLatest (optional)
+    Also tag as `latest` when primary tag is not `latest`.
+  pull (optional boolean)
+    Add `--pull` to docker build.
+  noCache (optional boolean)
+    Add `--no-cache`.
+  target (optional)
+    Build target stage.
+  platform (optional)
+    Build platform (for example `linux/amd64`).
+  buildArgs (optional map)
+    Docker build args.
+  labels (optional map)
+    Docker labels.
+  additionalTags (optional list)
+    Extra tags to apply to the same image.
+
+Requirements:
+  Docker CLI must be available on the Jenkins agent.

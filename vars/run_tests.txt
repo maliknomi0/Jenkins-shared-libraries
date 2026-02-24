@@ -1,0 +1,18 @@
+Run one or more test commands in a shell step.
+
+Usage:
+  run_tests(command: 'mvn test')
+  run_tests(commands: ['npm ci', 'npm test'])
+
+Parameters:
+  command (optional)
+    Single test command.
+  commands (optional list)
+    Multiple commands executed in order.
+  label (optional, default: Run tests)
+    Jenkins shell step label.
+  failIfMissing (optional boolean, default: false)
+    Fail the build when no test command is provided.
+
+Behavior:
+  If no command is supplied and `failIfMissing` is false, the step is skipped with a log message.

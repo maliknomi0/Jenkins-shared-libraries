@@ -1,0 +1,23 @@
+Generate and archive a text build report.
+
+Usage:
+  generate_reports(
+    projectName: 'my-service',
+    imageName: 'myorg/my-service',
+    imageTag: env.BUILD_NUMBER
+  )
+
+Parameters:
+  projectName (optional, default: env.JOB_NAME)
+    Display name for the report.
+  imageName (optional)
+    Docker image name to record.
+  imageTag (optional)
+    Docker image tag to record.
+  metadata (optional map)
+    Additional key/value lines appended to the report.
+  reportPath (optional, default: reports/build-report.txt)
+    Output report path to archive.
+
+Behavior:
+  Creates the report file, writes build metadata, and archives it with `archiveArtifacts`.

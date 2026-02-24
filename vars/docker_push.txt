@@ -1,0 +1,31 @@
+Push Docker image tags to a registry.
+
+Usage:
+  docker_push(imageName: 'myorg/app', imageTag: env.BUILD_NUMBER)
+  docker_push(
+    imageName: 'myorg/app',
+    imageTag: '123',
+    credentialsId: 'docker-hub-credentials',
+    registry: 'ghcr.io',
+    pushLatest: true,
+    additionalTags: ['qa']
+  )
+
+Parameters:
+  imageName (required)
+    Docker image name/repository.
+  imageTag (optional, default: latest)
+    Primary tag to push.
+  credentialsId / credentials (optional)
+    Jenkins username/password credentials ID (default: docker-hub-credentials).
+  registry (optional)
+    Registry hostname for `docker login` / `docker logout`.
+  pushLatest (optional boolean)
+    Also push `latest` when primary tag is not `latest`.
+  additionalTags (optional list)
+    Additional tags to push.
+  logout (optional boolean, default: true)
+    Run `docker logout` after push.
+
+Requirements:
+  Docker CLI must be available on the Jenkins agent.
