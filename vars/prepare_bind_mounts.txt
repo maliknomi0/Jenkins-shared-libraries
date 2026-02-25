@@ -1,0 +1,41 @@
+Prepare and validate host bind-mount directories before Docker or Docker Compose deploys.
+
+Usage:
+  prepare_bind_mounts(
+    mounts: [
+      [host: '/srv/myapp/uploads', container: '/app/uploads'],
+      [host: '/srv/myapp/logs', container: '/app/logs']
+    ],
+    image: 'my-registry.example.com/myapp/backend:build-123'
+  )
+
+Alternative image input:
+  prepare_bind_mounts(
+    mounts: [[host: '/srv/app/data', container: '/app/data']],
+    imageName: env.IMAGE_NAME,
+    imageTag: env.IMAGE_TAG
+  )
+
+Parameters:
+  mounts (required list)
+    List of maps with `host` and `container` paths.
+  image (optional)
+    Full image reference used for validation (for example `repo/app:tag`).
+  imageName + imageTag (optional)
+    Alternative to `image` for validation.
+  uid / gid (optional, default: 65532)
+    Runtime user/group that must be able to write to the host directories.
+  dirMode / fileMode (optional, defaults: 775 / 664)
+    Permissions applied during the ownership fix.
+  allowSudo (optional boolean, default: true)
+    Attempt passwordless sudo ownership fix when not running as root.
+  validateWithDocker (optional boolean, default: true)
+    Run a Docker-based write test using the runtime uid/gid.
+  validationEntrypoint (optional, default: /nodejs/bin/node)
+    Entrypoint used for validation (override for non-Node images).
+  label (optional)
+    Jenkins step label for the shell execution.
+
+Requirements:
+  Docker CLI must be available on the Jenkins agent.
+  Jenkins user should be root or have passwordless sudo to auto-fix ownership.
