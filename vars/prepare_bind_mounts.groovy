@@ -1,12 +1,11 @@
-import groovy.json.JsonOutput
-
 def call(Map config = [:]) {
     List mounts = (config.mounts ?: []) as List
     if (mounts.isEmpty()) {
         error("prepare_bind_mounts: 'mounts' is required (list of [host, container] maps)")
     }
 
-    List<Map<String, String>> normalizedMounts = mounts.collectWithIndex { item, idx ->
+    List normalizedMounts = []
+    mounts.eachWithIndex { item, idx ->
         if (!(item instanceof Map)) {
             error("prepare_bind_mounts: mounts[${idx}] must be a map")
         }
@@ -21,11 +20,11 @@ def call(Map config = [:]) {
             error("prepare_bind_mounts: mounts[${idx}].container is required")
         }
 
-        [host: host, container: container]
+        normalizedMounts << [host: host, container: container]
     }
 
-    int uid = config.containsKey('uid') ? (config.uid as Integer) : 65532
-    int gid = config.containsKey('gid') ? (config.gid as Integer) : 65532
+    int uid = config.containsKey('uid') ? config.uid.toString().toInteger() : 65532
+    int gid = config.containsKey('gid') ? config.gid.toString().toInteger() : 65532
     boolean allowSudo = config.containsKey('allowSudo') ? (config.allowSudo as boolean) : true
     boolean validateWithDocker = config.containsKey('validateWithDocker') ? (config.validateWithDocker as boolean) : true
     String dirMode = (config.dirMode ?: '775').toString().trim()
@@ -46,11 +45,11 @@ def call(Map config = [:]) {
         error("prepare_bind_mounts: 'image' or ('imageName' + 'imageTag') is required when validateWithDocker=true")
     }
 
-    List<String> hostDirs = normalizedMounts.collect { it.host }
+    List hostDirs = normalizedMounts.collect { it.host.toString() }
     String hostDirsArgs = hostDirs.collect { shellQuote(it) }.join(' ')
     String owner = "${uid}:${gid}"
 
-    List<String> scriptLines = []
+    List scriptLines = []
     scriptLines << 'set -eu'
     scriptLines << "mkdir -p ${hostDirsArgs}"
     scriptLines << ''
@@ -79,8 +78,8 @@ def call(Map config = [:]) {
     }
 
     if (validateWithDocker) {
-        String validationJs = buildValidationScript(normalizedMounts.collect { it.container })
-        List<String> dockerCmd = ['docker', 'run', '--rm', '--user', owner]
+        String validationJs = buildValidationScript(normalizedMounts.collect { it.container.toString() })
+        List dockerCmd = ['docker', 'run', '--rm', '--user', owner]
         normalizedMounts.each { mount ->
             dockerCmd.addAll(['-v', "${mount.host}:${mount.container}"])
         }
@@ -99,12 +98,17 @@ def call(Map config = [:]) {
     sh(label: label, script: scriptLines.join('\n'))
 }
 
-private String buildValidationScript(List<String> containerPaths) {
-    String jsonPaths = JsonOutput.toJson(containerPaths)
-    return "const fs=require('fs');for(const d of ${jsonPaths}){fs.mkdirSync(d,{recursive:true});const p=d+'/.permcheck';fs.writeFileSync(p,'ok');fs.unlinkSync(p);}"
+private String buildValidationScript(List containerPaths) {
+    String jsArray = '[' + containerPaths.collect { toJsString(it) }.join(',') + ']'
+    return "const fs=require('fs');for(const d of ${jsArray}){fs.mkdirSync(d,{recursive:true});const p=d+'/.permcheck';fs.writeFileSync(p,'ok');fs.unlinkSync(p);}"
 }
 
-private String shellJoin(List<String> args) {
+private String toJsString(def value) {
+    String s = value == null ? '' : value.toString()
+    return '"' + s.replace('\\', '\\\\').replace('"', '\\"') + '"'
+}
+
+private String shellJoin(List args) {
     args.collect { shellQuote(it) }.join(' ')
 }
 
