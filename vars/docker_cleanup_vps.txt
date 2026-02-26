@@ -1,0 +1,36 @@
+Clean Docker/container cache safely on a VPS after deployment while preserving rollback tags.
+
+Usage:
+  docker_cleanup_vps(
+    imageName: 'myorg/app',
+    deployPath: '/srv/myapp',
+    composeFile: 'docker-compose.yml',
+    serviceName: 'backend',
+    keepVersionedCount: 3,
+    protectedTags: ['latest', 'main-latest', 'previous']
+  )
+
+Parameters:
+  imageName (required)
+    Docker repository name to clean locally (for example `myorg/app`).
+  deployPath (required)
+    Path containing the compose project on the VPS.
+  composeFile (optional, default: docker-compose.yml)
+    Compose file path relative to deployPath.
+  serviceName (optional, default: backend)
+    Compose service name used to detect the currently running image.
+  keepVersionedCount (optional int, default: 3)
+    Number of recent versioned tags to keep locally in addition to protected tags.
+  protectedTags (optional list)
+    Tags never removed (default: latest, main-latest, previous).
+  imageUntil (optional, default: 168h)
+    Age threshold for `docker image prune` (dangling images only).
+  containerUntil (optional, default: 24h)
+    Age threshold for `docker container prune`.
+  builderUntil (optional, default: 168h)
+    Age threshold for `docker builder prune`.
+
+Notes:
+  - Does not prune volumes.
+  - Preserves the currently running service image.
+  - Intended for post-deploy cleanup on VPS hosts using Docker Compose.
